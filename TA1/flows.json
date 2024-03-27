@@ -1,0 +1,446 @@
+[
+    {
+        "id": "929c51a623ca03eb",
+        "type": "ui_gauge",
+        "z": "4a56d347f233fe44",
+        "name": "",
+        "group": "3125ee5a8ea0abc1",
+        "order": 0,
+        "width": "5",
+        "height": "3",
+        "gtype": "gage",
+        "title": "Humidity",
+        "label": "units",
+        "format": "{{value}}",
+        "min": "0",
+        "max": "100",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 300,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "33413df5b8389d30",
+        "type": "mqtt in",
+        "z": "4a56d347f233fe44",
+        "name": "",
+        "topic": "humValue",
+        "qos": "0",
+        "datatype": "auto-detect",
+        "broker": "ac6659385df72324",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 100,
+        "y": 120,
+        "wires": [
+            [
+                "929c51a623ca03eb",
+                "9a5a1e20a736b28b"
+            ]
+        ]
+    },
+    {
+        "id": "198e4111df70b622",
+        "type": "mqtt in",
+        "z": "4a56d347f233fe44",
+        "name": "",
+        "topic": "tempValue",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "ac6659385df72324",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 100,
+        "y": 180,
+        "wires": [
+            [
+                "9a5a1e20a736b28b",
+                "331649671caa546e"
+            ]
+        ]
+    },
+    {
+        "id": "9e4f4089544c308e",
+        "type": "function",
+        "z": "4a56d347f233fe44",
+        "name": "AddToArray",
+        "func": "var tableData = flow.get(\"savedData\") || []\n\nmsg.payload[\"timeStamp\"] = new Date().toLocaleString()\n\nif(tableData.length>0 )\n{   \n   tableData.unshift( msg.payload)\n}\nelse if(tableData.length==0){\n   tableData.unshift( msg.payload)\n}\n\nmsg.payload = tableData\n\nflow.set(\"savedData\", tableData)\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\nflow.set(\"savedData\", [])",
+        "finalize": "",
+        "libs": [],
+        "x": 450,
+        "y": 200,
+        "wires": [
+            [
+                "32b1086ee4a8d62b"
+            ]
+        ]
+    },
+    {
+        "id": "9a5a1e20a736b28b",
+        "type": "join",
+        "z": "4a56d347f233fe44",
+        "name": "",
+        "mode": "custom",
+        "build": "object",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": false,
+        "timeout": "10",
+        "count": "",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 290,
+        "y": 240,
+        "wires": [
+            [
+                "9e4f4089544c308e",
+                "4d94582c3ecd65cf"
+            ]
+        ]
+    },
+    {
+        "id": "32b1086ee4a8d62b",
+        "type": "ui_table",
+        "z": "4a56d347f233fe44",
+        "group": "d7add96eb24337e9",
+        "name": "Data Table",
+        "order": 1,
+        "width": "20",
+        "height": "5",
+        "columns": [
+            {
+                "field": "timeStamp",
+                "title": "Time Stamp",
+                "width": "30%",
+                "align": "center",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "tempValue",
+                "title": "Temperature",
+                "width": "",
+                "align": "center",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "phValue",
+                "title": "PH",
+                "width": "",
+                "align": "center",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "tdsValue",
+                "title": "TDS",
+                "width": "",
+                "align": "center",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "humValue",
+                "title": "Humidity",
+                "width": "",
+                "align": "center",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            }
+        ],
+        "outputs": 0,
+        "cts": false,
+        "x": 650,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "a7f735031d744371",
+        "type": "telegram client sender",
+        "z": "4a56d347f233fe44",
+        "name": "",
+        "bot": "38453e9c236cb604",
+        "x": 720,
+        "y": 280,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "88d89cd0d9d826de",
+        "type": "mqtt in",
+        "z": "4a56d347f233fe44",
+        "name": "",
+        "topic": "phValue",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "ac6659385df72324",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 90,
+        "y": 240,
+        "wires": [
+            [
+                "9a5a1e20a736b28b",
+                "a831993cadb576e8"
+            ]
+        ]
+    },
+    {
+        "id": "2bb98dbd88dc3384",
+        "type": "mqtt in",
+        "z": "4a56d347f233fe44",
+        "name": "",
+        "topic": "tdsValue",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "ac6659385df72324",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 100,
+        "y": 300,
+        "wires": [
+            [
+                "9a5a1e20a736b28b",
+                "e9dbbc66b4e5f360"
+            ]
+        ]
+    },
+    {
+        "id": "331649671caa546e",
+        "type": "ui_gauge",
+        "z": "4a56d347f233fe44",
+        "name": "",
+        "group": "3125ee5a8ea0abc1",
+        "order": 1,
+        "width": "5",
+        "height": "3",
+        "gtype": "gage",
+        "title": "Temperature",
+        "label": "units",
+        "format": "{{value}}",
+        "min": "-40",
+        "max": "80",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 310,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "a831993cadb576e8",
+        "type": "ui_gauge",
+        "z": "4a56d347f233fe44",
+        "name": "",
+        "group": "3125ee5a8ea0abc1",
+        "order": 2,
+        "width": "5",
+        "height": "3",
+        "gtype": "gage",
+        "title": "PH",
+        "label": "units",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "14",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 290,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "e9dbbc66b4e5f360",
+        "type": "ui_gauge",
+        "z": "4a56d347f233fe44",
+        "name": "",
+        "group": "3125ee5a8ea0abc1",
+        "order": 3,
+        "width": "5",
+        "height": "3",
+        "gtype": "gage",
+        "title": "TDS",
+        "label": "units",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "1000",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 290,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "4d94582c3ecd65cf",
+        "type": "function",
+        "z": "4a56d347f233fe44",
+        "name": "CheckForThreshold",
+        "func": "var thresholds = {humValue: { low: 12, high: 25 },\n                  tempValue: { low: 20, high: 30 },\n                  phValue: { low: 5.5, high: 7 },\n                  tdsValue: { low: 600, high: 1600 },\n                  }\nvar currentData = msg.payload\n\nvar status = \"\"\nfor (let key in thresholds) {\n  if (currentData[key] < thresholds[key].low ) {\n    status = `${status} ${key} reading is Low. (range ${thresholds[key].low}-${thresholds[key].high}) \\n`\n  }\n  else if (thresholds[key].high < currentData[key]) {\n    status = `${status} ${key} reading is High. (range ${thresholds[key].low}-${thresholds[key].high}) \\n`\n  }\n}\n\nif(status!=\"\")\n{\n  msg.payload = {\n      \"api\": \"messages\",\n      \"func\": \"SendMessage\",\n      \"args\": {\n          \"peer\": \"shubham80621\",\n          \"message\": status\n      }\n  }\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 470,
+        "y": 240,
+        "wires": [
+            [
+                "a7f735031d744371",
+                "58a57ccf8c2ac5d0"
+            ]
+        ]
+    },
+    {
+        "id": "58a57ccf8c2ac5d0",
+        "type": "debug",
+        "z": "4a56d347f233fe44",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 660,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "3125ee5a8ea0abc1",
+        "type": "ui_group",
+        "name": "Guages",
+        "tab": "d3fb97e7a614c68d",
+        "order": 1,
+        "disp": true,
+        "width": "20",
+        "collapse": true,
+        "className": ""
+    },
+    {
+        "id": "ac6659385df72324",
+        "type": "mqtt-broker",
+        "name": "C140",
+        "broker": "broker.emqx.io",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "d7add96eb24337e9",
+        "type": "ui_group",
+        "name": "Data Table",
+        "tab": "d3fb97e7a614c68d",
+        "order": 2,
+        "disp": true,
+        "width": "20",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "38453e9c236cb604",
+        "type": "telegram client config",
+        "botname": "Noderedexpbot",
+        "verboselogging": false,
+        "loginmode": "bot",
+        "useproxy": false,
+        "usewss": false,
+        "host": "",
+        "sockstype": "5",
+        "port": "6667",
+        "username": "anonymous",
+        "password": "",
+        "secret": "",
+        "mtproxy": false,
+        "timeout": "2",
+        "info": "6499039108:AAGX8TObSomH6Frhw_bh3wr4kc_XrW6crPI\r\n"
+    },
+    {
+        "id": "d3fb97e7a614c68d",
+        "type": "ui_tab",
+        "name": "Home",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    }
+]
